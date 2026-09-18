@@ -1949,7 +1949,7 @@ function setCat(cat,btn){catActiva=cat;document.querySelectorAll('#filtros-cat .
 function handleHash(){
     const hash = window.location.hash.slice(1);
     if(!hash) return;
-    
+
     const catMap = {
         'af-inventions': 'alfi',
         'alfi': 'alfi',
@@ -1960,7 +1960,7 @@ function handleHash(){
         'comics': 'comics',
         'otros': 'otros'
     };
-    
+
     function ejecutar(){
         if(catMap[hash]){
             const cat = catMap[hash];
@@ -1968,16 +1968,29 @@ function handleHash(){
             franqActiva = 'todas';
             document.querySelectorAll('#filtros-cat .btn-f').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('#filtros-franq .btn-f').forEach(b => b.classList.remove('active'));
-            document.querySelector('#filtros-cat .btn-f[onclick*="' + cat + '"]').classList.add('active');
-            document.querySelector('#filtros-franq .btn-f[onclick*="todas"]').classList.add('active');
+            const btnCat = document.querySelector('#filtros-cat .btn-f[onclick*="' + cat + '"]');
+            const btnTodas = document.querySelector('#filtros-franq .btn-f');
+            if(btnCat) btnCat.classList.add('active');
+            if(btnTodas) btnTodas.classList.add('active');
             renderGrid();
-            window.scrollTo({top:0, behavior:'smooth'});
+            window.scrollTo({top:0});
         } else {
             const producto = PRODUCTOS.find(p => p.id === hash);
             if(producto) abrirModal(hash);
         }
     }
-    setTimeout(ejecutar, 200);
+
+    // Esperar a que el grid tenga cards antes de ejecutar
+    function esperarGrid(intentos){
+        if(intentos <= 0){ ejecutar(); return; }
+        const cards = document.querySelectorAll('.card');
+        if(cards.length > 0){
+            ejecutar();
+        } else {
+            setTimeout(() => esperarGrid(intentos - 1), 100);
+        }
+    }
+    esperarGrid(20);
 }
 
 // Ejecutar al cargar y al cambiar hash
