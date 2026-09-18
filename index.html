@@ -1946,7 +1946,7 @@ function filtrados(){const q=document.getElementById('buscar').value.toLowerCase
 function setCat(cat,btn){catActiva=cat;document.querySelectorAll('#filtros-cat .btn-f').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderGrid();
 
 function compartirProducto(){
-    const url = window.location.origin + window.location.pathname + '#' + window.currentProductId;
+    const url = 'https://qupacperu.com/#' + window.currentProductId;
     navigator.clipboard.writeText(url).then(() => {
         const btn = document.getElementById('m-share');
         btn.textContent = '✅ Link copiado!';
@@ -1976,21 +1976,23 @@ function handleHash(){
         'otros': 'otros'
     };
     
-    if(catMap[hash]){
-        const cat = catMap[hash];
-        // Encontrar el botón correcto y hacer click en él
-        const btns = document.querySelectorAll('#filtros-cat .btn-f');
-        btns.forEach(b => {
-            const onclick = b.getAttribute('onclick');
-            if(onclick && onclick.includes("'"+cat+"'")){
-                b.click();
-            }
-        });
-        document.getElementById('catalogo').scrollIntoView({behavior:'smooth'});
-    } else {
-        const producto = PRODUCTOS.find(p => p.id === hash);
-        if(producto) abrirModal(hash);
+    function ejecutar(){
+        if(catMap[hash]){
+            const cat = catMap[hash];
+            catActiva = cat;
+            franqActiva = 'todas';
+            document.querySelectorAll('#filtros-cat .btn-f').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('#filtros-franq .btn-f').forEach(b => b.classList.remove('active'));
+            document.querySelector('#filtros-cat .btn-f[onclick*="' + cat + '"]').classList.add('active');
+            document.querySelector('#filtros-franq .btn-f[onclick*="todas"]').classList.add('active');
+            renderGrid();
+            window.scrollTo({top:0, behavior:'smooth'});
+        } else {
+            const producto = PRODUCTOS.find(p => p.id === hash);
+            if(producto) abrirModal(hash);
+        }
     }
+    setTimeout(ejecutar, 200);
 }
 
 // Ejecutar al cargar y al cambiar hash
