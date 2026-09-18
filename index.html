@@ -1965,7 +1965,6 @@ function handleHash(){
     const hash = window.location.hash.slice(1);
     if(!hash) return;
     
-    // Mapeo de URLs amigables a categorías
     const catMap = {
         'af-inventions': 'alfi',
         'alfi': 'alfi',
@@ -1978,21 +1977,17 @@ function handleHash(){
     };
     
     if(catMap[hash]){
-        // Filtrar por categoría
         const cat = catMap[hash];
-        catActiva = cat;
-        document.querySelectorAll('#filtros-cat .btn-f').forEach(b => {
+        // Encontrar el botón correcto y hacer click en él
+        const btns = document.querySelectorAll('#filtros-cat .btn-f');
+        btns.forEach(b => {
             const onclick = b.getAttribute('onclick');
             if(onclick && onclick.includes("'"+cat+"'")){
-                b.classList.add('active');
-            } else {
-                b.classList.remove('active');
+                b.click();
             }
         });
-        renderGrid();
         document.getElementById('catalogo').scrollIntoView({behavior:'smooth'});
     } else {
-        // Intentar abrir modal de producto
         const producto = PRODUCTOS.find(p => p.id === hash);
         if(producto) abrirModal(hash);
     }
@@ -2000,7 +1995,7 @@ function handleHash(){
 
 // Ejecutar al cargar y al cambiar hash
 window.addEventListener('hashchange', handleHash);
-setTimeout(handleHash, 150);}
+handleHash();}
 function setFranq(f,btn){franqActiva=f;document.querySelectorAll('#filtros-franq .btn-f').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderGrid();}
 function aplicarFiltros(){renderGrid();}
 function renderGrid(){const lista=filtrados();document.getElementById('contador').textContent=lista.length+' producto'+(lista.length!==1?'s':'');const g=document.getElementById('grid');if(!lista.length){g.innerHTML='<div class="empty"><p>No se encontraron productos 😕</p></div>';return;}g.innerHTML=lista.map(p=>{const img=p.imagenes[0]?`<img class="card-img" src="${p.imagenes[0]}" alt="${p.nombre}" loading="lazy" onerror="this.style.display='none'">`:`<div class="card-img-placeholder">📦</div>`;const bO=p.oferta?`<span class="badge-oferta">Oferta</span>`:'';const bP=p.stock<=2&&p.stock>0&&!p.proximamente?`<span class="badge-poco">Últimos</span>`:'';const bProx=p.proximamente?`<span class="badge-prox">Próximamente</span>`:'';const agotadoBadge=p.stock===0&&!p.proximamente?`<span style="font-size:0.7rem;font-weight:700;color:#e84a4a;background:rgba(232,74,74,0.12);padding:2px 7px;border-radius:8px;margin-left:4px">Agotado</span>`:'';const precioDisplay=p.proximamente?`<span style="font-size:0.8rem;font-weight:700;color:#6b4fbb">Próximamente</span>`:(p.precioAntes?`<span class="precio-actual">S/${p.precio}</span><span class="precio-antes">S/${p.precioAntes}</span>${agotadoBadge}`:`<span class="precio-actual">S/${p.precio}</span>${agotadoBadge}`);const pr=precioDisplay;return`<div class="card" onclick="abrirModal('${p.id}')">${bO}${bP}${bProx}${img}<div class="card-info"><div class="card-cat">${CATS[p.categoria]||p.categoria}</div><div class="card-nombre">${p.nombre}</div><div class="precios">${pr}</div></div></div>`;}).join('');}
