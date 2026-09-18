@@ -2009,6 +2009,16 @@ if(localStorage.getItem('cookies')){document.getElementById('cookieBanner').styl
 function aceptarCookies(){localStorage.setItem('cookies','accepted');document.getElementById('cookieBanner').style.display='none';}
 function rechazarCookies(){localStorage.setItem('cookies','rejected');document.getElementById('cookieBanner').style.display='none';}
 renderGrid();
+
+function abrirModalPorHash(){
+    const hash = window.location.hash.slice(1);
+    if(!hash) return;
+    const producto = PRODUCTOS.find(p => p.id === hash);
+    if(producto) abrirModal(hash);
+}
+
+window.addEventListener('hashchange', abrirModalPorHash);
+abrirModalPorHash();
 </script>
 </body>
 </html>
