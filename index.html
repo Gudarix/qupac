@@ -2073,6 +2073,27 @@ if(localStorage.getItem('cookies')){document.getElementById('cookieBanner').styl
 function aceptarCookies(){localStorage.setItem('cookies','accepted');document.getElementById('cookieBanner').style.display='none';}
 function rechazarCookies(){localStorage.setItem('cookies','rejected');document.getElementById('cookieBanner').style.display='none';}
 renderGrid();
+
+// Abrir producto por parámetro URL (?producto=ID)
+function procesarURLParams(){
+    const params = new URLSearchParams(window.location.search);
+    const productoId = params.get('producto');
+    if(productoId){
+        const producto = PRODUCTOS.find(p => p.id === productoId);
+        if(producto){
+            // Esperar a que el grid esté listo
+            function intentar(veces){
+                if(document.querySelectorAll('.card').length > 0){
+                    abrirModal(productoId);
+                } else if(veces > 0){
+                    setTimeout(() => intentar(veces - 1), 100);
+                }
+            }
+            intentar(20);
+        }
+    }
+}
+procesarURLParams();
 </script>
 </body>
 </html>
